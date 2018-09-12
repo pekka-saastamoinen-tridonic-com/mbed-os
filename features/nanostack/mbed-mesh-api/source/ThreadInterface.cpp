@@ -156,12 +156,22 @@ nsapi_error_t Nanostack::ThreadInterface::bringdown()
     return map_mesh_error(status);
 }
 
+extern void getInterface(int8_t interface);
+
+extern void initPingingThread();
+
 mesh_error_t Nanostack::ThreadInterface::init()
 {
     thread_tasklet_init();
     __mesh_handler_set_callback(this);
     device_eui64_get(NULL); // Ensure we've selected the EUI-64 - this does it
     interface_id = thread_tasklet_network_init(_device_id);
+
+    printf("\n\n\n\n ---- \n\n\n _network_interface_id: %d; _device_id: %d\n\n\n ---- \n\n\n", _network_interface_id, _device_id);
+
+    getInterface(_network_interface_id);
+
+    initPingingThread();
 
     if (interface_id == -2) {
         return MESH_ERROR_PARAM;
